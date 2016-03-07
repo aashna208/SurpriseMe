@@ -18,6 +18,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         businessInteraction = new BusinessInteraction();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         final TextView textView = (TextView) findViewById(R.id.text_view);
         businessInteraction.getBestMatchedResults("food", null, 20, new AsyncListener<BusinessResult>() {
             @Override
@@ -26,5 +31,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 }

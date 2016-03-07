@@ -18,13 +18,13 @@ import hackathon.yelp.com.surpriseme.GsonHelper;
  */
 public class NetworkAsyncTask<T> extends AsyncTask<UserRequest, Void, T> {
 
-    private final Token accessToken;
+    private Token accessToken;
     private AsyncListener<T> asyncListener;
 
     private static String CONSUMER_KEY = "EdAF-wmlMi22hsT0Q15rxA";
     private static String CONSUMER_SECRET = "Qx7g28y6vepX74AEAyee_qNbjmg";
-    private static String TOKEN = "_n3ctvndhxT2bBezwCkbxRg3g-nfFAp3";
-    private static String TOKEN_SECRET = "iDY6Rj2EIm8rmeo6r8EJmnJOS74";
+    private static String TOKEN = "hwjIT0h5j53Nk9oIqsIbt8fmQT8go8JE";
+    private static String TOKEN_SECRET = "eOk1_V98uTzK20ACO2AJl-U-0eQ";
     OAuthService service;
 
     public NetworkAsyncTask(AsyncListener<T> asyncListener) {
@@ -61,7 +61,13 @@ public class NetworkAsyncTask<T> extends AsyncTask<UserRequest, Void, T> {
         System.out.println("Querying " + request.getCompleteUrl() + " ...");
         this.service.signRequest(this.accessToken, request);
         Response response = request.send();
-        return response.getBody();
+        String data = convertStreamToString(response.getStream());
+        return data;
+    }
+
+    static String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 
     @Override
