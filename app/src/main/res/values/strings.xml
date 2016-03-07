@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Surprise Me</string>
+    <string name="yelp_host">api.yelp.com</string>
 </resources>

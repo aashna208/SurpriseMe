@@ -1,30 +1,51 @@
 package hackathon.yelp.com.surpriseme.yelpinteraction;
 
-import hackathon.yelp.com.surpriseme.datamodels.business.BusinessEntity;
 import hackathon.yelp.com.surpriseme.datamodels.business.BusinessResult;
+import hackathon.yelp.com.surpriseme.networkrequest.AsyncListener;
+import hackathon.yelp.com.surpriseme.networkrequest.NetworkAsyncTask;
+import hackathon.yelp.com.surpriseme.networkrequest.UserRequest;
 
-public interface BusinessInteraction {
+/**
+ * business interaction
+ */
+public class BusinessInteraction implements IBusinessInteraction {
 
-    /**
-     * Gets the best matched results
-     * refer https://www.yelp.com/developers/documentation/v2/all_category_list
-     * for supported category list
-     * search term can be food, restaurant, bar, restaurant name etc can be empty too
-     */
-    BusinessResult getBestMatchedResults(String searchTerm, String category, int number);
+    private static String YELP_SEARCH =
+            "https://api.yelp.com/v2/search?term={term}&limit={limit}&sort={sort}&location=San+Fransisco";
+    private static int SORT_BEST_MATCHED = 0;
+    private static int SORT_NEAREST = 1;
+    private static int SORT_HIGHEST_RATED = 2;
 
+    @Override
+    public void getBestMatchedResults(String searchTerm, String category, int number, AsyncListener asyncListener) {
+        yelpSearch(searchTerm, number, SORT_BEST_MATCHED, asyncListener);
+    }
 
-    BusinessResult getNearestResults(String searchTerm, String category, int number);
+    @Override
+    public void getNearestResults(String searchTerm, String category, int number, AsyncListener asyncListener) {
+        yelpSearch(searchTerm, number, SORT_NEAREST, asyncListener);
+    }
 
-    /**
-     * Gets the highest rated results - with highest rating at top which is normalized to get the
-     * correct ordering based on rating and number of ratings
-     * @param searchTerm
-     * @param category
-     * @param number
-     * @return
-     */
-    BusinessResult getHighestRatedResults(String searchTerm, String category, int number);
+    @Override
+    public void getHighestRatedResults(String searchTerm, String category, int number, AsyncListener asyncListener) {
+        yelpSearch(searchTerm, number, SORT_HIGHEST_RATED, asyncListener);
+    }
 
-    BusinessEntity getBusinessDetails(String businessId);
+    @Override
+    public void getBusinessDetails(String businessId, AsyncListener asyncListener) {
+        // yelpSearch(searchTerm, number, SORT_BEST_MATCHED, asyncListener);
+    }
+
+    private static void yelpSearch(String searchTerm, int number, int sort, AsyncListener asyncListener) {
+        String url = YELP_SEARCH;
+        url = url.replace("{term}", searchTerm);
+        url = url.replace("{limit}", String.valueOf(number));
+        url = url.replace("{sort}", String.valueOf(SORT_BEST_MATCHED));
+
+        NetworkAsyncTask<BusinessInteraction> networkAsyncTask =
+                new NetworkAsyncTask(asyncListener);
+        UserRequest<BusinessResult> userRequest =
+                new UserRequest<BusinessResult>(url, BusinessResult.class, null);
+        networkAsyncTask.execute(userRequest);
+    }
 }
